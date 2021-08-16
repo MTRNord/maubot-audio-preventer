@@ -64,10 +64,6 @@ If you then still not comply you will after {self.config['kick_warning_amount']}
 
     @event.on(m_voice_event)
     async def handle_m_voice_event(self, evt: GenericEvent) -> None:
-        content = TextMessageEventContent(
-            msgtype=MessageType.NOTICE, content="Please do not send Audio or Voice messages. This is your first warning!")
-        content.set_reply(evt.event_id)
-        await self.client.send_message_event(evt.room_id, EventType.ROOM_MESSAGE, content)
 
         await self.client.redact(evt.room_id, evt.event_id, "Voice messages are not allowed")
         warnings = self.db.get_user(evt.sender)
