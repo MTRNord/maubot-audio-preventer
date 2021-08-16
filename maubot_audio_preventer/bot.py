@@ -46,7 +46,8 @@ class MaubotAudioPreventer(Plugin):
 
         warnings = self.db.get_user(evt.sender)
         if (warnings is None):
-            await evt.reply(f"Please do not send Audio or Voice messages. This is your first warning! You have {self.config['text_warning_amount'] - 1} warnings left before you will get kicked.")
+            await evt.reply(f"""Please do not send Audio or Voice messages. This is your first warning! You have {self.config['text_warning_amount'] - 1} warnings left before you will get kicked.\n
+            If you then still not comply you will after {self.config['kick_warning_amount']} kicks get banned from this room. The counter is across all rooms this bot is admin in.""")
             self.db.add_user(evt.sender)
         else:
             warnings_typed: UserInfo = warnings
