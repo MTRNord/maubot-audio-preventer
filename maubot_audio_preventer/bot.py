@@ -26,7 +26,7 @@ class MaubotAudioPreventer(Plugin):
     async def start(self) -> None:
         self.config.load_and_update()
         self.db = Database(self.database)
-        #self.log.debug("Loaded %s from config example 2", self.config["example_2.value"])
+        # self.log.debug("Loaded %s from config example 2", self.config["example_2.value"])
 
     async def stop(self) -> None:
         pass
@@ -39,7 +39,7 @@ class MaubotAudioPreventer(Plugin):
 
     @event.on(EventType.ROOM_MESSAGE)
     async def audio_event_handler(self, evt: MessageEvent) -> None:
-        if (evt.content.msgtype != MessageType.AUDIO):
+        if evt.content.msgtype != MessageType.AUDIO or evt.sender in self.config['whitelist']:
             return
 
         await self.client.redact(evt.room_id, evt.event_id, "Voice messages are not allowed")
@@ -62,14 +62,15 @@ If you then still not comply you will after {self.config['kick_warning_amount']}
             else:
                 await self.client.ban_user(evt.room_id, evt.sender, "You exceeded your voice message kick warnings. You are now getting banned for spam!")
 
-    @event.on(m_voice_event)
+    @ event.on(m_voice_event)
     async def handle_m_voice_event(self, evt: GenericEvent) -> None:
 
         await self.client.redact(evt.room_id, evt.event_id, "Voice messages are not allowed")
         warnings = self.db.get_user(evt.sender)
         if (warnings is None):
             content = TextMessageEventContent(
-                msgtype=MessageType.NOTICE, content=f"Please do not send Audio or Voice messages. This is your first warning! You have {self.config['text_warning_amount'] - 1} warnings left before you will get kicked.")
+                msgtype=MessageType.NOTICE, content=f"""Please do not send Audio or Voice messages. This is your first warning! You have {self.config['text_warning_amount'] - 1} warnings left before you will get kicked.\n
+If you then still not comply you will after {self.config['kick_warning_amount']} kicks get banned from this room. The counter is across all rooms this bot is admin in.""")
             content.set_reply(evt.event_id)
 
             await self.client.send_message_event(evt.room_id, EventType.ROOM_MESSAGE, content)
