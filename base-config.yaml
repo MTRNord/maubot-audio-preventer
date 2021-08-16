@@ -1,0 +1,4 @@
+text_warning_amount: 3
+kick_warning_amount: 5
+whitelist:
+    - "@mtrnord:nordgedanken.dev"
