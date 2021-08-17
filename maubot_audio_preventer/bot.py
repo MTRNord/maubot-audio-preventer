@@ -41,7 +41,7 @@ class MaubotAudioPreventer(Plugin):
     async def audio_event_handler(self, evt: MessageEvent) -> None:
         if evt.content.msgtype != MessageType.AUDIO or evt.sender in self.config['whitelist']:
             return
-        if evt.get("m.voice") is None and evt.get("org.matrix.msc1767.audio") is None:
+        if evt.content.get("m.voice") is None and evt.content.get("org.matrix.msc1767.audio") is None:
             return
 
         await self.client.redact(evt.room_id, evt.event_id, "Voice messages are not allowed")
